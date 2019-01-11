@@ -3,6 +3,7 @@
 import pygame as pg
 # import random
 from pyjumpup.settings import *
+from pyjumpup.sprites import *
 
 
 class Game:
@@ -18,10 +19,13 @@ class Game:
 
         # Game variables; see #new()
         self.all_sprites = None
+        self.player = None
 
     def new(self):
         # Start a new game
         self.all_sprites = pg.sprite.Group()
+        self.player = Player()
+        self.all_sprites.add(self.player)
         self.run()
 
     def run(self):
@@ -44,6 +48,10 @@ class Game:
             if event.type == pg.QUIT:
                 self.playing = False
                 self.running = False
+            # for dev purposes; remove later
+            elif event.type == pg.KEYDOWN:
+                if event.key == pg.K_ESCAPE:
+                    self.playing = self.running = False
 
     def draw(self):
         # Game loop - draw
