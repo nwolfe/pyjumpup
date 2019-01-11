@@ -99,18 +99,44 @@ class Game:
 
     def draw(self):
         # Game loop - draw
-        self.screen.fill(BLACK)
+        self.screen.fill(BGCOLOR)
         self.all_sprites.draw(self.screen)
         self.draw_text(str(self.score), 22, WHITE, WIDTH / 2,15)
         pg.display.flip()
 
     def show_start_screen(self):
         # Game splash/start screen
-        pass
+        self.screen.fill(BGCOLOR)
+        self.draw_text(TITLE, 48, WHITE, WIDTH / 2, HEIGHT / 4)
+        self.draw_text('Arrows to move, Space to jump', 22, WHITE, WIDTH / 2, HEIGHT / 2)
+        self.draw_text('Press any key to play', 22, WHITE, WIDTH / 2, HEIGHT * 3 / 4)
+        pg.display.flip()
+        self.wait_for_keypress()
 
     def show_game_over_screen(self):
         # Game over/continue
-        pass
+        if not self.running:
+            return
+        self.screen.fill(BGCOLOR)
+        self.draw_text('GAME OVER', 48, WHITE, WIDTH / 2, HEIGHT / 4)
+        self.draw_text("Score: %s" % self.score, 22, WHITE, WIDTH / 2, HEIGHT / 2)
+        self.draw_text('Press any key to play again', 22, WHITE, WIDTH / 2, HEIGHT * 3 / 4)
+        pg.display.flip()
+        self.wait_for_keypress()
+
+    def wait_for_keypress(self):
+        waiting = True
+        while waiting:
+            self.clock.tick(FPS)
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    waiting = False
+                    self.running = False
+                if event.type == pg.KEYUP:
+                    # For dev-only; remove later
+                    if event.key == pg.K_ESCAPE:
+                        self.playing = self.running = False
+                    waiting = False
 
     def draw_text(self, text, size, color, x, y):
         font = pg.font.Font(self.font_name, size)
