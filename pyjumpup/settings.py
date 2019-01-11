@@ -4,6 +4,7 @@ WIDTH = 480
 HEIGHT = 600
 FPS = 60
 FONT_NAME = 'arial'
+HIGH_SCORE_FILE = 'highscore.txt'
 
 # player properties
 PLAYER_ACCELERATION = 0.5

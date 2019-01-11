@@ -1,9 +1,10 @@
 # Jumpy! - platform game
 
-import random
 import pygame as pg
 from pyjumpup.settings import *
 from pyjumpup.sprites import *
+import random
+import os
 
 
 class Game:
@@ -23,6 +24,20 @@ class Game:
         self.platforms = None
         self.player = None
         self.score = None
+        self.highscore = None
+
+        # High score persistence
+        self.directory = None
+        self.load_data()
+
+    def load_data(self):
+        # load high score file
+        self.directory = os.getcwd()
+        try:
+            with open(os.path.join(self.directory, HIGH_SCORE_FILE), 'r') as file:
+                self.highscore = int(file.read())
+        except:
+            self.highscore = 0
 
     def new(self):
         # Start a new game
@@ -110,6 +125,7 @@ class Game:
         self.draw_text(TITLE, 48, WHITE, WIDTH / 2, HEIGHT / 4)
         self.draw_text('Arrows to move, Space to jump', 22, WHITE, WIDTH / 2, HEIGHT / 2)
         self.draw_text('Press any key to play', 22, WHITE, WIDTH / 2, HEIGHT * 3 / 4)
+        self.draw_text("High Score: %s" % self.highscore, 22, WHITE, WIDTH / 2, 15)
         pg.display.flip()
         self.wait_for_keypress()
 
@@ -121,6 +137,13 @@ class Game:
         self.draw_text('GAME OVER', 48, WHITE, WIDTH / 2, HEIGHT / 4)
         self.draw_text("Score: %s" % self.score, 22, WHITE, WIDTH / 2, HEIGHT / 2)
         self.draw_text('Press any key to play again', 22, WHITE, WIDTH / 2, HEIGHT * 3 / 4)
+        if self.score > self.highscore:
+            self.highscore = self.score
+            self.draw_text('NEW HIGH SCORE!', 22, WHITE, WIDTH / 2, HEIGHT / 2 + 40)
+            with open(os.path.join(self.directory, HIGH_SCORE_FILE), 'w') as file:
+                file.write(str(self.highscore))
+        else:
+            self.draw_text("High Score: %s" % self.highscore, 22, WHITE, WIDTH / 2, HEIGHT / 2 + 40)
         pg.display.flip()
         self.wait_for_keypress()
 
