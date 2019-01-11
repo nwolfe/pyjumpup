@@ -25,17 +25,12 @@ class Game:
         # Start a new game
         self.all_sprites = pg.sprite.Group()
         self.platforms = pg.sprite.Group()
-        self.player = Player()
+        self.player = Player(self)
         self.all_sprites.add(self.player)
-
-        # Temporary platforms
-        p1 = Platform(0, HEIGHT - 40, WIDTH, 40)
-        self.all_sprites.add(p1)
-        self.platforms.add(p1)
-        p2 = Platform(WIDTH / 2 - 50, HEIGHT * 3 / 4, 100, 20)
-        self.all_sprites.add(p2)
-        self.platforms.add(p2)
-
+        for platform in PLATFORMS:
+            p = Platform(*platform)
+            self.all_sprites.add(p)
+            self.platforms.add(p)
         self.run()
 
     def run(self):
@@ -50,10 +45,12 @@ class Game:
     def update(self):
         # Game loop - update
         self.all_sprites.update()
-        hits = pg.sprite.spritecollide(self.player, self.platforms, False)
-        if hits:
-            self.player.pos.y = hits[0].rect.top + 1
-            self.player.vel.y = 0
+        # Check if player hits a platform - only if falling
+        if self.player.vel.y > 0:
+            hits = pg.sprite.spritecollide(self.player, self.platforms, False)
+            if hits:
+                self.player.pos.y = hits[0].rect.top + 1
+                self.player.vel.y = 0
 
     def events(self):
         # Game loop - events
@@ -62,8 +59,10 @@ class Game:
             if event.type == pg.QUIT:
                 self.playing = False
                 self.running = False
-            # for dev purposes; remove later
-            elif event.type == pg.KEYDOWN:
+            if event.type == pg.KEYDOWN:
+                if event.key == pg.K_SPACE:
+                    self.player.jump()
+                # for dev purposes; remove later
                 if event.key == pg.K_ESCAPE:
                     self.playing = self.running = False
 

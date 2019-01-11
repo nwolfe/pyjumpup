@@ -5,8 +5,9 @@ from pyjumpup.settings import *
 
 
 class Player(pg.sprite.Sprite):
-    def __init__(self):
+    def __init__(self, game):
         pg.sprite.Sprite.__init__(self)
+        self.game = game
         self.image = pg.Surface((30, 40))
         self.image.fill(YELLOW)
         self.rect = self.image.get_rect()
@@ -16,7 +17,7 @@ class Player(pg.sprite.Sprite):
         self.acc = pg.math.Vector2(0, 0)
 
     def update(self):
-        self.acc = pg.math.Vector2(0, GRAVITY)
+        self.acc = pg.math.Vector2(0, PLAYER_GRAVITY)
         keys = pg.key.get_pressed()
         if keys[pg.K_LEFT]:
             self.acc.x = -PLAYER_ACCELERATION
@@ -34,6 +35,14 @@ class Player(pg.sprite.Sprite):
         if self.pos.x < 0:
             self.pos.x = WIDTH
         self.rect.midbottom = self.pos
+
+    def jump(self):
+        # jump only if standing on a platform
+        self.rect.x += 1
+        hits = pg.sprite.spritecollide(self, self.game.platforms, False)
+        self.rect.x -= 1
+        if hits:
+            self.vel.y = -20
 
 
 class Platform(pg.sprite.Sprite):
