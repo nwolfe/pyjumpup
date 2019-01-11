@@ -26,8 +26,9 @@ class Game:
         self.score = None
         self.highscore = None
 
-        # High score persistence
+        # High score persistence, resources
         self.directory = None
+        self.spritesheet = None
         self.load_data()
 
     def load_data(self):
@@ -38,6 +39,10 @@ class Game:
                 self.highscore = int(file.read())
         except:
             self.highscore = 0
+
+        # load spritesheet image
+        img_dir = os.path.join(self.directory, '..', 'resources', 'img')
+        self.spritesheet = Spritesheet(os.path.join(img_dir, SPRITESHEET_FILE))
 
     def new(self):
         # Start a new game

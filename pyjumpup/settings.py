@@ -5,6 +5,7 @@ HEIGHT = 600
 FPS = 60
 FONT_NAME = 'arial'
 HIGH_SCORE_FILE = 'highscore.txt'
+SPRITESHEET_FILE = 'spritesheet_jumper.png'
 
 # player properties
 PLAYER_ACCELERATION = 0.5
