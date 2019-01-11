@@ -16,14 +16,17 @@ class Game:
         self.clock = pg.time.Clock()
         self.running = True
         self.playing = False
+        self.font_name = pg.font.match_font(FONT_NAME)
 
         # Game variables; see #new()
         self.all_sprites = None
         self.platforms = None
         self.player = None
+        self.score = None
 
     def new(self):
         # Start a new game
+        self.score = 0
         self.all_sprites = pg.sprite.Group()
         self.platforms = pg.sprite.Group()
         self.player = Player(self)
@@ -53,13 +56,23 @@ class Game:
                 self.player.pos.y = hits[0].rect.top + 1
                 self.player.vel.y = 0
 
-        # Start scrolling when player reaches top 1/4 of screen
+        # Scroll when player reaches top 1/4 of screen
         if self.player.rect.top <= HEIGHT / 4:
             self.player.pos.y += abs(self.player.vel.y)
             for platform in self.platforms:
                 platform.rect.y += abs(self.player.vel.y)
                 if platform.rect.top >= HEIGHT:
                     platform.kill()
+                    self.score += 10
+
+        # Fall to your death!
+        if self.player.rect.bottom > HEIGHT:
+            for sprite in self.all_sprites:
+                sprite.rect.y -= max(self.player.vel.y, 10)
+                if sprite.rect.bottom < 0:
+                    sprite.kill()
+            if len(self.platforms) == 0:
+                self.playing = False
 
         # Spawn new platforms to keep some average number
         while len(self.platforms) < 6:
@@ -88,6 +101,7 @@ class Game:
         # Game loop - draw
         self.screen.fill(BLACK)
         self.all_sprites.draw(self.screen)
+        self.draw_text(str(self.score), 22, WHITE, WIDTH / 2,15)
         pg.display.flip()
 
     def show_start_screen(self):
@@ -97,6 +111,13 @@ class Game:
     def show_game_over_screen(self):
         # Game over/continue
         pass
+
+    def draw_text(self, text, size, color, x, y):
+        font = pg.font.Font(self.font_name, size)
+        text_surface = font.render(text, True, color)
+        text_rect = text_surface.get_rect()
+        text_rect.midtop = (x, y)
+        self.screen.blit(text_surface, text_rect)
 
 
 game = Game()

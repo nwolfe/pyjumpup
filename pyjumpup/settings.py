@@ -3,6 +3,7 @@ TITLE = 'Jump Up!'
 WIDTH = 480
 HEIGHT = 600
 FPS = 60
+FONT_NAME = 'arial'
 
 # player properties
 PLAYER_ACCELERATION = 0.5
