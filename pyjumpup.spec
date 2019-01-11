@@ -5,8 +5,8 @@
 NAME = 'pyjumpup'
 ASSETS = [('resources', 'resources')]
 CODE = [
-    'main.py',
-    'settings.py'
+    'pyjumpup/main.py',
+    'pyjumpup/settings.py'
 ]
 
 DEBUG = False
