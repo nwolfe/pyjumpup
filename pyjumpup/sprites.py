@@ -42,7 +42,7 @@ class Player(pg.sprite.Sprite):
         hits = pg.sprite.spritecollide(self, self.game.platforms, False)
         self.rect.x -= 1
         if hits:
-            self.vel.y = -20
+            self.vel.y = -PLAYER_JUMP
 
 
 class Platform(pg.sprite.Sprite):
