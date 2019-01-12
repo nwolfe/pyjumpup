@@ -1,5 +1,6 @@
 # Sprite classes for platform game
 
+import random
 import pygame as pg
 from pyjumpup.settings import *
 
@@ -26,7 +27,7 @@ class Player(pg.sprite.Sprite):
         self.jumping = False
         self.current_frame = 0
         self.last_update = 0
-        self.pos = pg.math.Vector2(WIDTH / 2, HEIGHT / 2)
+        self.pos = pg.math.Vector2(40, HEIGHT - 100)
         self.vel = pg.math.Vector2(0, 0)
         self.acc = pg.math.Vector2(0, 0)
         self.standing_frames = None
@@ -101,18 +102,20 @@ class Player(pg.sprite.Sprite):
 
     def jump(self):
         # jump only if standing on a platform
-        self.rect.x += 1
+        self.rect.x += 2
         hits = pg.sprite.spritecollide(self, self.game.platforms, False)
-        self.rect.x -= 1
+        self.rect.x -= 2
         if hits:
             self.vel.y = -PLAYER_JUMP
 
 
 class Platform(pg.sprite.Sprite):
-    def __init__(self, x, y, width, height):
+    def __init__(self, game, x, y):
         pg.sprite.Sprite.__init__(self)
-        self.image = pg.Surface((width, height))
-        self.image.fill(GREEN)
+        self.game = game
+        images = [self.game.spritesheet.get_image(0, 288, 380, 94),
+                  self.game.spritesheet.get_image(213, 1662, 201, 100)]
+        self.image = random.choice(images)
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y

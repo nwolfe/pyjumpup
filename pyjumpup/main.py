@@ -52,7 +52,7 @@ class Game:
         self.player = Player(self)
         self.all_sprites.add(self.player)
         for platform in PLATFORMS:
-            p = Platform(*platform)
+            p = Platform(self, *platform)
             self.all_sprites.add(p)
             self.platforms.add(p)
         self.run()
@@ -78,9 +78,9 @@ class Game:
 
         # Scroll when player reaches top 1/4 of screen
         if self.player.rect.top <= HEIGHT / 4:
-            self.player.pos.y += abs(self.player.vel.y)
+            self.player.pos.y += max(4, abs(self.player.vel.y))
             for platform in self.platforms:
-                platform.rect.y += abs(self.player.vel.y)
+                platform.rect.y += max(4, abs(self.player.vel.y))
                 if platform.rect.top >= HEIGHT:
                     platform.kill()
                     self.score += 10
@@ -97,9 +97,8 @@ class Game:
         # Spawn new platforms to keep some average number
         while len(self.platforms) < 6:
             width = random.randrange(50, 100)
-            p = Platform(random.randrange(0, WIDTH - width),
-                         random.randrange(-75, -30),
-                         width, 20)
+            p = Platform(self, random.randrange(0, WIDTH - width),
+                         random.randrange(-75, -30))
             self.all_sprites.add(p)
             self.platforms.add(p)
 
@@ -121,7 +120,8 @@ class Game:
         # Game loop - draw
         self.screen.fill(BGCOLOR)
         self.all_sprites.draw(self.screen)
-        self.draw_text(str(self.score), 22, WHITE, WIDTH / 2,15)
+        self.screen.blit(self.player.image, self.player.rect)
+        self.draw_text(str(self.score), 22, WHITE, WIDTH / 2, 15)
         pg.display.flip()
 
     def show_start_screen(self):
