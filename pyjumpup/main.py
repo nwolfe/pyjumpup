@@ -1,10 +1,20 @@
 # Jumpy! - platform game
+#
+# Credits:
+# - Art from Kenney.nl
+# - Happy Tune by http://opengameart.org/users/syncopika
+# - Yippee by http://opengameart.org/users/snabisch
 
 import pygame as pg
 from pyjumpup.settings import *
 from pyjumpup.sprites import *
 import random
 import os
+
+
+RESOURCE_DIR = os.path.join(os.getcwd(), '..', 'resources')
+IMG_DIR = os.path.join(RESOURCE_DIR, 'img')
+SND_DIR = os.path.join(RESOURCE_DIR, 'snd')
 
 
 class Game:
@@ -29,6 +39,7 @@ class Game:
         # High score persistence, resources
         self.directory = None
         self.spritesheet = None
+        self.jump_sound = None
         self.load_data()
 
     def load_data(self):
@@ -41,8 +52,10 @@ class Game:
             self.highscore = 0
 
         # load spritesheet image
-        img_dir = os.path.join(self.directory, '..', 'resources', 'img')
-        self.spritesheet = Spritesheet(os.path.join(img_dir, SPRITESHEET_FILE))
+        self.spritesheet = Spritesheet(os.path.join(IMG_DIR, SPRITESHEET_FILE))
+        # load sounds
+        self.jump_sound = pg.mixer.Sound(os.path.join(SND_DIR, 'Jump33.wav'))
+        self.jump_sound.set_volume(VOLUME_JUMP)
 
     def new(self):
         # Start a new game
@@ -55,16 +68,20 @@ class Game:
             p = Platform(self, *platform)
             self.all_sprites.add(p)
             self.platforms.add(p)
+        pg.mixer_music.load(os.path.join(SND_DIR, 'HappyTune.ogg'))
+        pg.mixer_music.set_volume(VOLUME_BACKGROUND)
         self.run()
 
     def run(self):
         # Game loop
+        pg.mixer_music.play(loops=-1)
         self.playing = True
         while self.playing:
             self.clock.tick(FPS)
             self.events()
             self.update()
             self.draw()
+        pg.mixer_music.fadeout(500)
 
     def update(self):
         # Game loop - update
@@ -137,6 +154,9 @@ class Game:
 
     def show_start_screen(self):
         # Game splash/start screen
+        pg.mixer_music.load(os.path.join(SND_DIR, 'Yippee.ogg'))
+        pg.mixer_music.set_volume(VOLUME_MENU)
+        pg.mixer_music.play(loops=-1)
         self.screen.fill(BGCOLOR)
         self.draw_text(TITLE, 48, WHITE, WIDTH / 2, HEIGHT / 4)
         self.draw_text('Arrows to move, Space to jump', 22, WHITE, WIDTH / 2, HEIGHT / 2)
@@ -144,11 +164,15 @@ class Game:
         self.draw_text("High Score: %s" % self.highscore, 22, WHITE, WIDTH / 2, 15)
         pg.display.flip()
         self.wait_for_keypress()
+        pg.mixer_music.fadeout(500)
 
     def show_game_over_screen(self):
         # Game over/continue
         if not self.running:
             return
+        pg.mixer_music.load(os.path.join(SND_DIR, 'Yippee.ogg'))
+        pg.mixer_music.set_volume(VOLUME_GAMEOVER)
+        pg.mixer_music.play(loops=-1)
         self.screen.fill(BGCOLOR)
         self.draw_text('GAME OVER', 48, WHITE, WIDTH / 2, HEIGHT / 4)
         self.draw_text("Score: %s" % self.score, 22, WHITE, WIDTH / 2, HEIGHT / 2)
@@ -162,6 +186,7 @@ class Game:
             self.draw_text("High Score: %s" % self.highscore, 22, WHITE, WIDTH / 2, HEIGHT / 2 + 40)
         pg.display.flip()
         self.wait_for_keypress()
+        pg.mixer_music.fadeout(500)
 
     def wait_for_keypress(self):
         waiting = True
