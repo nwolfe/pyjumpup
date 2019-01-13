@@ -10,7 +10,7 @@ SPRITESHEET_FILE = 'spritesheet_jumper.png'
 # player properties
 PLAYER_ACCELERATION = 0.5
 PLAYER_FRICTION = 0.12
-PLAYER_GRAVITY = 0.5
+PLAYER_GRAVITY = 0.8
 PLAYER_JUMP = 20
 
 # starting platforms
