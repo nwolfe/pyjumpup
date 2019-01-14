@@ -31,6 +31,7 @@ class Game:
 
         # Game variables; see #new()
         self.all_sprites = None
+        self.powerups = None
         self.platforms = None
         self.player = None
         self.score = None
@@ -40,6 +41,7 @@ class Game:
         self.directory = None
         self.spritesheet = None
         self.jump_sound = None
+        self.boost_sound = None
         self.load_data()
 
     def load_data(self):
@@ -56,18 +58,18 @@ class Game:
         # load sounds
         self.jump_sound = pg.mixer.Sound(os.path.join(SND_DIR, 'Jump33.wav'))
         self.jump_sound.set_volume(VOLUME_JUMP)
+        self.boost_sound = pg.mixer.Sound(os.path.join(SND_DIR, 'Boost16.wav'))
+        self.boost_sound.set_volume(VOLUME_BOOST)
 
     def new(self):
         # Start a new game
         self.score = 0
         self.all_sprites = pg.sprite.Group()
         self.platforms = pg.sprite.Group()
+        self.powerups = pg.sprite.Group()
         self.player = Player(self)
-        self.all_sprites.add(self.player)
         for platform in PLATFORMS:
-            p = Platform(self, *platform)
-            self.all_sprites.add(p)
-            self.platforms.add(p)
+            Platform(self, *platform)
         pg.mixer_music.load(os.path.join(SND_DIR, 'HappyTune.ogg'))
         pg.mixer_music.set_volume(VOLUME_BACKGROUND)
         self.run()
@@ -95,11 +97,13 @@ class Game:
                 for hit in hits:
                     if hit.rect.bottom > lowest.rect.bottom:
                         lowest = hit
-                # Only snap to top if *feet* are higher than middle of platform
-                if self.player.pos.y < lowest.rect.centery:
-                    self.player.pos.y = lowest.rect.top + 1
-                    self.player.vel.y = 0
-                    self.player.jumping = False
+                # Only snap to top if majority of body is above platform (horizontal)
+                if lowest.rect.right + 10 > self.player.pos.x > lowest.rect.left - 10:
+                    # Only snap to top if *feet* are higher than middle of platform (vertical)
+                    if self.player.pos.y < lowest.rect.centery:
+                        self.player.pos.y = lowest.rect.top + 1
+                        self.player.vel.y = 0
+                        self.player.jumping = False
 
         # Scroll when player reaches top 1/4 of screen
         if self.player.rect.top <= HEIGHT / 4:
@@ -109,6 +113,14 @@ class Game:
                 if platform.rect.top >= HEIGHT:
                     platform.kill()
                     self.score += 10
+
+        # Player hits a powerup
+        powerup_hits = pg.sprite.spritecollide(self.player, self.powerups, True)
+        for powerup in powerup_hits:
+            if powerup.type == 'boost':
+                self.boost_sound.play()
+                self.player.vel.y = - BOOST_POWER
+                self.player.jumping = False
 
         # Fall to your death!
         if self.player.rect.bottom > HEIGHT:
@@ -122,10 +134,8 @@ class Game:
         # Spawn new platforms to keep some average number
         while len(self.platforms) < 6:
             width = random.randrange(50, 100)
-            p = Platform(self, random.randrange(0, WIDTH - width),
-                         random.randrange(-75, -30))
-            self.all_sprites.add(p)
-            self.platforms.add(p)
+            Platform(self, random.randrange(0, WIDTH - width),
+                     random.randrange(-75, -30))
 
     def events(self):
         # Game loop - events

@@ -10,14 +10,19 @@ VOLUME_JUMP = 0.4
 VOLUME_BACKGROUND = 1.0
 VOLUME_MENU = 0.3
 VOLUME_GAMEOVER = 0.3
+VOLUME_BOOST = 1.0
 
-# player properties
+# Player properties
 PLAYER_ACCELERATION = 0.5
 PLAYER_FRICTION = 0.12
 PLAYER_GRAVITY = 0.8
 PLAYER_JUMP = 20
 
-# starting platforms
+# Game properties
+BOOST_POWER = 60
+POWERUP_SPAWN_PERCENTAGE = 7
+
+# Starting platforms
 PLATFORMS = [
     (0, HEIGHT - 60),
     (WIDTH / 2 - 50, HEIGHT * 3 / 4),
@@ -26,7 +31,7 @@ PLATFORMS = [
     (175, 100)
 ]
 
-# define colors
+# Define colors
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)

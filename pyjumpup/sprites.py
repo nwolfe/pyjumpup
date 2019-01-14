@@ -21,7 +21,7 @@ class Spritesheet:
 
 class Player(pg.sprite.Sprite):
     def __init__(self, game):
-        pg.sprite.Sprite.__init__(self)
+        pg.sprite.Sprite.__init__(self, game.all_sprites)
         self.game = game
         self.walking = False
         self.jumping = False
@@ -118,7 +118,7 @@ class Player(pg.sprite.Sprite):
 
 class Platform(pg.sprite.Sprite):
     def __init__(self, game, x, y):
-        pg.sprite.Sprite.__init__(self)
+        pg.sprite.Sprite.__init__(self, game.all_sprites, game.platforms)
         self.game = game
         images = [self.game.spritesheet.get_image(0, 288, 380, 94),
                   self.game.spritesheet.get_image(213, 1662, 201, 100)]
@@ -126,4 +126,24 @@ class Platform(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
+        if random.randrange(100) < POWERUP_SPAWN_PERCENTAGE:
+            Powerup(self.game, self)
 
+
+class Powerup(pg.sprite.Sprite):
+    def __init__(self, game, platform):
+        pg.sprite.Sprite.__init__(self, game.all_sprites, game.powerups)
+        self.game = game
+        self.platform = platform
+        self.type = random.choice(['boost'])
+        # powerup_jetpack.png
+        self.image = self.game.spritesheet.get_image(820, 1805, 71, 70)
+        self.rect = self.image.get_rect()
+        self.rect.centerx = self.platform.rect.centerx
+        self.rect.bottom = self.platform.rect.top - 5
+
+    def update(self):
+        # Keep the powerup on top of the platform in case it moves
+        self.rect.bottom = self.platform.rect.top - 5
+        if not self.game.platforms.has(self.platform):
+            self.kill()
