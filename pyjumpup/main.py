@@ -33,6 +33,7 @@ class Game:
         self.all_sprites = None
         self.powerups = None
         self.platforms = None
+        self.clouds = None
         self.mobs = None
         self.player = None
         self.score = None
@@ -42,6 +43,7 @@ class Game:
         # High score persistence, resources
         self.directory = None
         self.spritesheet = None
+        self.cloud_images = None
         self.jump_sound = None
         self.boost_sound = None
         self.load_data()
@@ -57,6 +59,12 @@ class Game:
 
         # load spritesheet image
         self.spritesheet = Spritesheet(os.path.join(IMG_DIR, SPRITESHEET_FILE))
+        # cloud images
+        self.cloud_images = []
+        for i in range(1, 4):
+            image = pg.image.load(os.path.join(IMG_DIR, 'cloud%s.png' % i)).convert()
+            image.set_colorkey(BLACK)
+            self.cloud_images.append(image)
         # load sounds
         self.jump_sound = pg.mixer.Sound(os.path.join(SND_DIR, 'Jump33.wav'))
         self.jump_sound.set_volume(VOLUME_JUMP)
@@ -67,6 +75,7 @@ class Game:
         # Start a new game
         self.score = 0
         self.all_sprites = pg.sprite.LayeredUpdates()
+        self.clouds = pg.sprite.Group()
         self.platforms = pg.sprite.Group()
         self.powerups = pg.sprite.Group()
         self.mobs = pg.sprite.Group()
@@ -76,6 +85,9 @@ class Game:
         pg.mixer_music.load(os.path.join(SND_DIR, 'HappyTune.ogg'))
         pg.mixer_music.set_volume(VOLUME_BACKGROUND)
         self.mob_timer = 0
+        for i in range(8):
+            cloud = Cloud(self)
+            cloud.rect.y += 500
         self.run()
 
     def run(self):
@@ -123,7 +135,11 @@ class Game:
 
         # Scroll when player reaches top 1/4 of screen
         if self.player.rect.top <= HEIGHT / 4:
+            if random.randrange(100) < 15:
+                Cloud(self)
             self.player.pos.y += max(4, abs(self.player.vel.y))
+            for cloud in self.clouds:
+                cloud.rect.y += max(random.randrange(2, 6), abs(self.player.vel.y / 2))
             for mob in self.mobs:
                 mob.rect.y += max(4, abs(self.player.vel.y))
             for platform in self.platforms:

@@ -118,6 +118,25 @@ class Player(pg.sprite.Sprite):
                 self.vel.y = -3
 
 
+class Cloud(pg.sprite.Sprite):
+    def __init__(self, game):
+        self._layer = LAYER_CLOUD
+        pg.sprite.Sprite.__init__(self, game.all_sprites, game.clouds)
+        self.game = game
+        self.image = random.choice(self.game.cloud_images)
+        self.rect = self.image.get_rect()
+        scale = random.randrange(50, 101) / 100
+        self.image = pg.transform.scale(self.image,
+                                        (int(self.rect.width * scale),
+                                         int(self.rect.height * scale)))
+        self.rect.x = random.randrange(WIDTH - self.rect.width)
+        self.rect.y = random.randrange(-500, -50)
+
+    def update(self):
+        if self.rect.top > HEIGHT * 2:
+            self.kill()
+
+
 class Platform(pg.sprite.Sprite):
     def __init__(self, game, x, y):
         self._layer = LAYER_PLATFORM
