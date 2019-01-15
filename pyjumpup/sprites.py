@@ -100,6 +100,7 @@ class Player(pg.sprite.Sprite):
                 self.image = self.standing_frames[self.current_frame]
                 self.rect = self.image.get_rect()
                 self.rect.bottom = bottom
+        self.mask = pg.mask.from_surface(self.image)
 
     def jump(self):
         # jump only if standing on a platform
@@ -183,5 +184,6 @@ class Mob(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = center
         self.rect.y += self.vy
+        self.mask = pg.mask.from_surface(self.image)
         if self.rect.left > WIDTH + 100 or self.rect.right < -100:
             self.kill()
