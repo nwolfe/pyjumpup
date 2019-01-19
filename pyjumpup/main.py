@@ -23,6 +23,22 @@ IMG_DIR = os.path.join(RESOURCE_DIR, 'img')
 SND_DIR = os.path.join(RESOURCE_DIR, 'snd')
 
 
+class Persistence:
+    def __init__(self):
+        self.directory = os.getcwd()
+
+    def load_highscore(self):
+        try:
+            with open(os.path.join(self.directory, HIGH_SCORE_FILE), 'r') as file:
+                return int(file.read())
+        except:
+            return 0
+
+    def save_highscore(self, highscore):
+        with open(os.path.join(self.directory, HIGH_SCORE_FILE), 'w') as file:
+            file.write(str(highscore))
+
+
 class Game:
     def __init__(self):
         # Initialize game window, etc
@@ -47,22 +63,16 @@ class Game:
         self.mob_timer = None
 
         # High score persistence, resources
-        self.directory = None
         self.spritesheet = None
         self.cloud_images = None
         self.jump_sound = None
         self.boost_sound = None
+        self.persistence = Persistence()
         self.load_data()
 
     def load_data(self):
         # load high score file
-        self.directory = os.getcwd()
-        try:
-            with open(os.path.join(self.directory, HIGH_SCORE_FILE), 'r') as file:
-                self.highscore = int(file.read())
-        except:
-            self.highscore = 0
-
+        self.highscore = self.persistence.load_highscore()
         # load spritesheet image
         self.spritesheet = Spritesheet(os.path.join(IMG_DIR, SPRITESHEET_FILE))
         # cloud images
@@ -229,8 +239,7 @@ class Game:
         if self.score > self.highscore:
             self.highscore = self.score
             self.draw_text('NEW HIGH SCORE!', 22, WHITE, WIDTH / 2, HEIGHT / 2 + 40)
-            with open(os.path.join(self.directory, HIGH_SCORE_FILE), 'w') as file:
-                file.write(str(self.highscore))
+            self.persistence.save_highscore(self.highscore)
         else:
             self.draw_text("High Score: %s" % self.highscore, 22, WHITE, WIDTH / 2, HEIGHT / 2 + 40)
         pg.display.flip()
