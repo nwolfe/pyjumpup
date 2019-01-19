@@ -7,7 +7,8 @@ ASSETS = [('resources', 'resources')]
 CODE = [
     'pyjumpup/main.py',
     'pyjumpup/settings.py',
-    'pyjumpup/sprites.py'
+    'pyjumpup/sprites.py',
+    'pyjumpup/persistence.py'
 ]
 
 DEBUG = False

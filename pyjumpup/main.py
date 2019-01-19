@@ -5,12 +5,13 @@
 # - Happy Tune by http://opengameart.org/users/syncopika
 # - Yippee by http://opengameart.org/users/snabisch
 
+import os
+import sys
+import random
 import pygame as pg
 from pyjumpup.settings import *
 from pyjumpup.sprites import *
-import random
-import os
-import sys
+from pyjumpup.persistence import *
 
 # Support running from single .exe (via PyInstaller)
 if getattr(sys, 'frozen', False):
@@ -21,22 +22,6 @@ else:
 
 IMG_DIR = os.path.join(RESOURCE_DIR, 'img')
 SND_DIR = os.path.join(RESOURCE_DIR, 'snd')
-
-
-class Persistence:
-    def __init__(self):
-        self.directory = os.getcwd()
-
-    def load_highscore(self):
-        try:
-            with open(os.path.join(self.directory, HIGH_SCORE_FILE), 'r') as file:
-                return int(file.read())
-        except:
-            return 0
-
-    def save_highscore(self, highscore):
-        with open(os.path.join(self.directory, HIGH_SCORE_FILE), 'w') as file:
-            file.write(str(highscore))
 
 
 class Game:
