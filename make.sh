@@ -7,6 +7,7 @@
 case $1 in
     build)
             pyinstaller pyjumpup.spec
+            read
             ;;
     clean)
             rm -rf ./build/

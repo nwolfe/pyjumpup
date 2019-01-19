@@ -16,9 +16,8 @@ CONSOLE = DEBUG
 ### PyInstaller configuration below
 
 block_cipher = None
-from os import getcwd
 a = Analysis(CODE,
-             pathex=[getcwd()],
+             pathex=['.'],
              binaries=[],
              datas=ASSETS,
              hiddenimports=['pygame'],
