@@ -1,5 +1,6 @@
 .idea/
-.vscode/settings.json
+.vscode/
+!.vscode/tasks.json
 build/
 dist/
 __pycache__/

@@ -8,10 +8,10 @@
 import os
 import sys
 import random
+import appdirs
 import pygame as pg
 from pyjumpup.settings import *
 from pyjumpup.sprites import *
-from pyjumpup.persistence import *
 
 # Support running from single .exe (via PyInstaller)
 if getattr(sys, 'frozen', False):
@@ -45,17 +45,23 @@ class Game:
         self.highscore = None
         self.mob_timer = None
 
-        # High score persistence, resources
+        # High score persistence, resources; see #load_data()
         self.spritesheet = None
         self.cloud_images = None
         self.jump_sound = None
         self.boost_sound = None
-        self.persistence = Persistence()
+        self.directory = None
         self.load_data()
 
     def load_data(self):
         # load high score file
-        self.highscore = self.persistence.load_highscore()
+        self.directory = appdirs.user_data_dir('pyjumpup', 'python')
+        os.makedirs(self.directory, exist_ok=True)
+        try:
+            with open(os.path.join(self.directory, HIGH_SCORE_FILE), 'r') as f:
+                self.highscore = int(f.read())
+        except:
+            self.highscore = 0
         # load spritesheet image
         self.spritesheet = Spritesheet(os.path.join(IMG_DIR, SPRITESHEET_FILE))
         # cloud images
@@ -222,7 +228,8 @@ class Game:
         if self.score > self.highscore:
             self.highscore = self.score
             self.draw_text('NEW HIGH SCORE!', 22, WHITE, WIDTH / 2, HEIGHT / 2 + 40)
-            self.persistence.save_highscore(self.highscore)
+            with open(os.path.join(self.directory, HIGH_SCORE_FILE), 'w') as f:
+                f.write(str(self.highscore))
         else:
             self.draw_text("High Score: %s" % self.highscore, 22, WHITE, WIDTH / 2, HEIGHT / 2 + 40)
         pg.display.flip()
